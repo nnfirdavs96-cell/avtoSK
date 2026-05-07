@@ -290,6 +290,15 @@
       var canvas = document.querySelector('.az-offcanvas');
       if (canvas) canvas.classList.remove('active');
     }
+    // Legacy offcanvas (header.php uses canvas_open / canvas_close)
+    if (e.target.closest('.canvas_open')) {
+      document.querySelector('.offcanvas_menu')?.classList.add('active');
+      document.querySelector('.off_canvars_overlay')?.classList.add('active');
+    }
+    if (e.target.closest('.canvas_close') || e.target.closest('.off_canvars_overlay')) {
+      document.querySelector('.offcanvas_menu')?.classList.remove('active');
+      document.querySelector('.off_canvars_overlay')?.classList.remove('active');
+    }
   });
 
   /* ──────────────────────────────────────────────────────
