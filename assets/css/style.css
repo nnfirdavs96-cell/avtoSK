@@ -11406,3 +11406,118 @@ mark.highlight{background:#ffe08a;padding:0 2px;border-radius:2px}
 .az-badge-warning{background:#fff3cd;color:#856404}
 .az-badge-danger{background:#f8d7da;color:#721c24}
 .az-badge-secondary{background:#e2e3e5;color:#383d41}
+/* =============================================
+   DASHBOARD / ADMIN PANEL LAYOUT
+   ============================================= */
+.az-admin-page{background:var(--bg-primary,#0d0d0d);color:var(--text-primary,#f0f0f0);min-height:100vh;font-family:'Open Sans',sans-serif}
+/* Top navbar */
+.az-admin-navbar{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;background:var(--bg-secondary,#141414);border-bottom:1px solid var(--border,#2a2a2a);position:sticky;top:0;z-index:100}
+.az-admin-logo{font-size:18px;font-weight:900;letter-spacing:2px;color:var(--text-primary,#f0f0f0);text-decoration:none}
+.az-admin-logo span{color:var(--accent,#ff6b35)}
+.az-admin-nav-links{display:flex;list-style:none;gap:20px;margin:0;padding:0}
+.az-admin-nav-links a{color:var(--text-secondary,#888);text-decoration:none;font-size:13px;transition:color .2s}
+.az-admin-nav-links a:hover{color:var(--accent,#ff6b35)}
+/* Dashboard layout */
+.dash-layout{display:flex;min-height:calc(100vh - 56px)}
+.dash-sidebar{width:220px;min-width:220px;background:var(--bg-secondary,#141414);border-right:1px solid var(--border,#2a2a2a);padding:20px 0}
+.dash-main{flex:1;padding:28px 32px;overflow-x:auto}
+.dash-heading{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent,#ff6b35);margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border,#2a2a2a)}
+/* Sidebar nav */
+.az-side-nav{padding:0}
+.az-nav-group{margin-bottom:8px}
+.az-nav-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted,#555);padding:8px 20px 4px}
+.az-side-nav ul{list-style:none;margin:0;padding:0}
+.az-side-nav ul li a{display:block;padding:8px 20px;font-size:13px;color:var(--text-secondary,#888);text-decoration:none;transition:background .15s,color .15s;border-left:3px solid transparent}
+.az-side-nav ul li a:hover{background:var(--bg-hover,#222);color:var(--text-primary,#f0f0f0)}
+.az-side-nav ul li a.active{background:var(--accent-glow,rgba(255,107,53,.15));color:var(--accent,#ff6b35);border-left-color:var(--accent,#ff6b35)}
+/* Stat grid */
+.az-stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-bottom:28px}
+.az-stat-card{background:var(--bg-card,#1a1a1a);border:1px solid var(--border,#2a2a2a);border-radius:var(--radius,4px);padding:20px;transition:border-color .2s}
+.az-stat-card:hover{border-color:var(--accent,#ff6b35)}
+.az-stat-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted,#555);margin-bottom:10px}
+.az-stat-value{font-size:2rem;font-weight:800;line-height:1;color:var(--text-primary,#f0f0f0)}
+.az-stat-accent{color:var(--accent,#ff6b35)}
+/* Cards */
+.az-card{background:var(--bg-card,#1a1a1a);border:1px solid var(--border,#2a2a2a);border-radius:var(--radius,4px);margin-bottom:24px}
+.az-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border,#2a2a2a)}
+.az-card-header h2,.az-card-header h3,.az-card-header h4{margin:0;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary,#f0f0f0)}
+.az-card-body{padding:20px}
+.az-card-footer{padding:12px 20px;border-top:1px solid var(--border,#2a2a2a)}
+/* Tables */
+.az-table-wrap{overflow-x:auto}
+.az-table{width:100%;border-collapse:collapse;font-size:13px}
+.az-table th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted,#555);border-bottom:1px solid var(--border,#2a2a2a);white-space:nowrap}
+.az-table td{padding:12px 14px;border-bottom:1px solid var(--border,#2a2a2a);color:var(--text-secondary,#888);vertical-align:middle}
+.az-table tr:hover td{background:var(--bg-hover,#222)}
+.az-table tr:last-child td{border-bottom:none}
+/* Admin buttons */
+.az-admin-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:var(--radius,4px);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background .2s,color .2s,border-color .2s}
+.az-admin-btn-primary{background:var(--accent,#ff6b35);color:#fff}
+.az-admin-btn-primary:hover{background:var(--accent-dark,#cc4a1a);color:#fff}
+.az-admin-btn-outline{background:transparent;border:1px solid var(--border,#2a2a2a);color:var(--text-secondary,#888)}
+.az-admin-btn-outline:hover{border-color:var(--accent,#ff6b35);color:var(--accent,#ff6b35)}
+.az-admin-btn-danger{background:#e74c3c;color:#fff}
+.az-admin-btn-danger:hover{background:#c0392b;color:#fff}
+.az-admin-btn-sm{padding:5px 10px;font-size:11px}
+.az-admin-btn-lg{padding:12px 24px;font-size:14px}
+/* Status badges */
+.az-status{display:inline-block;padding:3px 10px;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.az-status-pending{background:rgba(243,156,18,.15);color:#f39c12}
+.az-status-processing{background:rgba(52,152,219,.15);color:#3498db}
+.az-status-shipped{background:rgba(155,89,182,.15);color:#9b59b6}
+.az-status-delivered{background:rgba(46,204,113,.15);color:#2ecc71}
+.az-status-cancelled{background:rgba(231,76,60,.15);color:#e74c3c}
+.az-status-new{background:rgba(255,107,53,.15);color:#ff6b35}
+.az-status-confirmed{background:rgba(52,152,219,.15);color:#3498db}
+.az-status-paid{background:rgba(46,204,113,.15);color:#2ecc71}
+/* Forms in admin */
+.az-form-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px}
+.az-form-col{flex:1;min-width:200px}
+.az-admin-input,.az-admin-select,.az-admin-textarea{width:100%;background:var(--bg-primary,#0d0d0d);border:1px solid var(--border,#2a2a2a);border-radius:var(--radius,4px);color:var(--text-primary,#f0f0f0);padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s}
+.az-admin-input:focus,.az-admin-select:focus,.az-admin-textarea:focus{border-color:var(--accent,#ff6b35)}
+.az-admin-label{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted,#555);margin-bottom:6px}
+.az-admin-textarea{resize:vertical;min-height:80px}
+/* Utility */
+.mono{font-family:var(--font-mono,'Courier New',monospace)}
+.az-page-title{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent,#ff6b35);margin-bottom:20px}
+.az-divider{border:none;border-top:1px solid var(--border,#2a2a2a);margin:20px 0}
+.text-accent{color:var(--accent,#ff6b35)}
+.text-muted-dark{color:var(--text-muted,#555)}
+/* Responsive sidebar */
+@media(max-width:768px){
+  .dash-layout{flex-direction:column}
+  .dash-sidebar{width:100%;min-width:unset;border-right:none;border-bottom:1px solid var(--border,#2a2a2a)}
+  .dash-main{padding:16px}
+}
+/* Cart & misc */
+.az-cart-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+@media(max-width:900px){.az-cart-grid{grid-template-columns:1fr}}
+.az-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.az-grid-2{grid-template-columns:1fr}}
+.az-order-summary{border-radius:var(--radius,4px);padding:20px}
+.az-summary-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border,#2a2a2a)}
+.az-summary-total{display:flex;align-items:center;justify-content:space-between;padding:14px 0 0;border-top:2px solid var(--accent,#ff6b35);margin-top:8px}
+/* Qty control */
+.az-qty-control{display:flex;align-items:center;gap:4px}
+.az-qty-btn{width:28px;height:28px;background:var(--bg-hover,#222);border:1px solid var(--border,#2a2a2a);border-radius:3px;color:var(--text-primary,#f0f0f0);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.az-qty-btn:hover{background:var(--accent,#ff6b35);border-color:var(--accent,#ff6b35)}
+.az-qty-num{width:40px;text-align:center;background:var(--bg-primary,#0d0d0d);border:1px solid var(--border,#2a2a2a);border-radius:3px;color:var(--text-primary,#f0f0f0);font-size:13px;padding:4px 6px}
+/* Pagination */
+.az-pagination{display:flex;gap:4px;flex-wrap:wrap;margin-top:20px}
+.az-page-link{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border:1px solid var(--border,#2a2a2a);border-radius:3px;color:var(--text-secondary,#888);font-size:12px;text-decoration:none;transition:background .15s,color .15s}
+.az-page-link:hover,.az-page-link.active{background:var(--accent,#ff6b35);border-color:var(--accent,#ff6b35);color:#fff}
+/* No data */
+.az-no-data{text-align:center;padding:60px 20px;color:var(--text-muted,#555)}
+.az-no-data-icon{font-size:48px;margin-bottom:16px}
+/* Form elements inside dark dashboard */
+.az-form-input,.az-form-select,.az-form-textarea{width:100%;background:var(--bg-primary,#0d0d0d);border:1px solid var(--border,#2a2a2a);border-radius:var(--radius,4px);color:var(--text-primary,#f0f0f0);padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box;transition:border-color .2s}
+.az-form-input:focus,.az-form-select:focus,.az-form-textarea:focus{border-color:var(--accent,#ff6b35)}
+.az-form-textarea{resize:vertical;min-height:80px}
+.az-form-select option{background:var(--bg-secondary,#141414)}
+/* Admin btn block */
+.az-admin-btn-block{display:block;width:100%;text-align:center}
+/* Spacing utils */
+.mb-16{margin-bottom:16px!important}
+.mb-24{margin-bottom:24px!important}
+.mt-16{margin-top:16px!important}
+.mt-24{margin-top:24px!important}
