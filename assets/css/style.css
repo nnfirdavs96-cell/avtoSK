@@ -11368,3 +11368,41 @@ mark.highlight{background:#ffe08a;padding:0 2px;border-radius:2px}
 .az-part-card-footer{padding:10px 14px;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:8px}
 /* Cart badge */
 .cart_quantity{position:absolute;top:-6px;right:-6px;background:var(--az-primary);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;line-height:1}
+/* Auth pages */
+.az-auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f4f6f8}
+.az-auth-box{background:#fff;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:40px 36px;width:100%;max-width:440px}
+.az-auth-logo{display:block;font-size:22px;font-weight:900;letter-spacing:2px;color:#222;text-decoration:none;margin-bottom:24px;text-align:center}
+.az-auth-logo span{color:var(--az-primary,#e74c3c)}
+.az-auth-title{font-size:24px;font-weight:700;color:#222;margin-bottom:4px;text-align:center}
+.az-auth-subtitle{font-size:14px;color:#888;margin-bottom:24px;text-align:center}
+.az-form-group{margin-bottom:16px}
+.az-form-label{display:block;font-size:13px;font-weight:600;color:#555;margin-bottom:6px}
+.az-input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:4px;font-size:14px;color:#333;outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box}
+.az-input:focus{border-color:var(--az-primary,#e74c3c);box-shadow:0 0 0 3px rgba(231,76,60,.12)}
+.az-btn{display:inline-block;padding:9px 20px;border:none;border-radius:4px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;transition:background .2s,transform .1s}
+.az-btn:active{transform:scale(.98)}
+.az-btn-primary{background:var(--az-primary,#e74c3c);color:#fff}
+.az-btn-primary:hover{background:#c0392b;color:#fff}
+.az-btn-outline{background:transparent;border:2px solid var(--az-primary,#e74c3c);color:var(--az-primary,#e74c3c)}
+.az-btn-outline:hover{background:var(--az-primary,#e74c3c);color:#fff}
+.az-btn-sm{padding:6px 14px;font-size:12px}
+.az-btn-block{display:block;width:100%}
+.az-auth-footer{margin-top:20px;text-align:center;font-size:13px;color:#888}
+.az-auth-footer a{color:var(--az-primary,#e74c3c);text-decoration:none;font-weight:600}
+.az-auth-footer a:hover{text-decoration:underline}
+.az-error-list{background:#fef2f2;border:1px solid #fecaca;border-radius:4px;padding:12px 16px;margin-bottom:16px;color:#b91c1c;font-size:13px;list-style:none}
+.az-error-list li::before{content:"✕ "}
+.az-demo-accounts{margin-top:24px;background:#f8f9fa;border-radius:6px;padding:16px}
+.az-demo-label{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.az-demo-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:12px;color:#555}
+.az-demo-row:last-child{border-bottom:none}
+.az-role{font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em}
+.az-role-superadmin{background:#7c3aed;color:#fff}
+.az-role-admin{background:#e74c3c;color:#fff}
+.az-role-manager{background:#2563eb;color:#fff}
+.az-role-buyer{background:#16a34a;color:#fff}
+.az-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600}
+.az-badge-success{background:#d4edda;color:#155724}
+.az-badge-warning{background:#fff3cd;color:#856404}
+.az-badge-danger{background:#f8d7da;color:#721c24}
+.az-badge-secondary{background:#e2e3e5;color:#383d41}
