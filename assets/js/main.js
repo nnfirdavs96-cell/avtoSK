@@ -3,6 +3,41 @@
   'use strict';
 
   /* ──────────────────────────────────────────────────────
+     Hero slider (vanilla JS, replaces OWL Carousel)
+  ────────────────────────────────────────────────────── */
+  (function initSlider() {
+    var track  = document.querySelector('.slider_active');
+    if (!track) return;
+    var slides = Array.from(track.querySelectorAll('.single_slider'));
+    if (slides.length === 0) return;
+
+    var current = 0;
+
+    // Build dots
+    var dotsWrap = document.createElement('div');
+    dotsWrap.className = 'slider-dots';
+    slides.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', function () { goTo(i); });
+      dotsWrap.appendChild(dot);
+    });
+    track.parentElement.appendChild(dotsWrap);
+    var dots = Array.from(dotsWrap.querySelectorAll('.slider-dot'));
+
+    function goTo(idx) {
+      slides[current].classList.remove('active-slide');
+      dots[current].classList.remove('active');
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.add('active-slide');
+      dots[current].classList.add('active');
+    }
+
+    goTo(0);
+    setInterval(function () { goTo(current + 1); }, 5000);
+  }());
+
+  /* ──────────────────────────────────────────────────────
      Live search
   ────────────────────────────────────────────────────── */
   var searchInput = document.getElementById('az-search-input');
