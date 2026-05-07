@@ -31,52 +31,49 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- slider area start -->
-<div class="slider_area">
-  <div class="slider_active owl-carousel">
-    <div class="single_slider d-flex align-items-center slider_bg_1">
+<section class="slider_section mb-80">
+  <div class="slider_area slider_carousel owl-carousel">
+    <div class="single_slider d-flex align-items-center" data-bgimg="<?= APP_URL ?>/assets/img/slider/slider1.jpg">
       <div class="container">
         <div class="row">
-          <div class="col-lg-7 col-md-8">
+          <div class="col-12">
             <div class="slider_content">
-              <h5>Добро пожаловать в АвтоЗапчасть</h5>
-              <h1>ЗАПЧАСТИ <br>ДЛЯ ЛЮБОГО <br>АВТОМОБИЛЯ</h1>
+              <h1>Запчасти <span>для любого автомобиля</span></h1>
               <p>Оригинальные и аналоговые запчасти от ведущих мировых производителей. Более 50 000 позиций в наличии.</p>
-              <a href="<?= APP_URL ?>/catalog/index.php" class="btn btn-primary btn-lg">Перейти в каталог</a>
+              <a class="button" href="<?= APP_URL ?>/catalog/index.php">В каталог <i class="fa fa-angle-double-right"></i></a>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="single_slider d-flex align-items-center slider_bg_2">
+    <div class="single_slider d-flex align-items-center" data-bgimg="<?= APP_URL ?>/assets/img/slider/slider2.jpg">
       <div class="container">
         <div class="row">
-          <div class="col-lg-7 col-md-8">
-            <div class="slider_content">
-              <h5>Быстрая доставка</h5>
-              <h1>ДОСТАВКА <br>ПО МОСКВЕ <br>ЗА 24 ЧАСА</h1>
+          <div class="col-12">
+            <div class="slider_content center">
+              <h1>Быстрая доставка <span>по Москве за 24 часа</span></h1>
               <p>Гарантия качества на все товары. Подбор по номеру детали или VIN-коду автомобиля.</p>
-              <a href="<?= APP_URL ?>/catalog/index.php" class="btn btn-primary btn-lg">Смотреть каталог</a>
+              <a class="button" href="<?= APP_URL ?>/catalog/index.php">Смотреть каталог <i class="fa fa-angle-double-right"></i></a>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="single_slider d-flex align-items-center slider_bg_3">
+    <div class="single_slider d-flex align-items-center" data-bgimg="<?= APP_URL ?>/assets/img/slider/slider3.jpg">
       <div class="container">
         <div class="row">
-          <div class="col-lg-7 col-md-8">
+          <div class="col-12">
             <div class="slider_content">
-              <h5>Склад Москва — быстрая отгрузка</h5>
-              <h1>СКЛАД В <br>МОСКВЕ <br>ДОСТУПЕН</h1>
+              <h1>Качественные <span>детали двигателя</span></h1>
               <p>Наличие товара на московском складе. Самовывоз или экспресс-доставка по всей России.</p>
-              <a href="<?= APP_URL ?>/catalog/index.php" class="btn btn-primary btn-lg">Найти запчасть</a>
+              <a class="button" href="<?= APP_URL ?>/catalog/index.php">Найти запчасть <i class="fa fa-angle-double-right"></i></a>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 <!-- slider area end -->
 
 <!-- service area start -->

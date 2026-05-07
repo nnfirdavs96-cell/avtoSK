@@ -167,7 +167,7 @@ $isAdmin     = hasRole(['admin','manager','superadmin']);
     <!-- header top end -->
 
     <!-- header middle -->
-    <div class="header_middle sticky_header">
+    <div class="header_middle sticky_header sticky-header">
       <div class="container">
         <div class="row align-items-center">
           <div class="col-lg-2 col-md-3 col-sm-4 col-6">
