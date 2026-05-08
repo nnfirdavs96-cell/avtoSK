@@ -249,7 +249,7 @@ HTML;
           <p>Советы по обслуживанию и ремонту автомобиля.</p>
         </div>
       </div></div>
-      <div class="row blog_carousel owl-carousel">
+      <div class="blog_carousel owl-carousel">
         <?php
         $blogs = [
           ['img'=>'blog1.jpg','title'=>'Как выбрать тормозные диски: полное руководство','tag'=>'Советы','date'=>'Март 2025'],
@@ -259,19 +259,17 @@ HTML;
         ];
         foreach ($blogs as $bl):
         ?>
-        <div class="col-lg-3">
-          <article class="single_blog">
-            <figure>
-              <div class="blog_thumb"><a href="#"><img src="<?= APP_URL ?>/assets/img/blog/<?= $bl['img'] ?>" alt="<?= $bl['title'] ?>"></a></div>
-              <figcaption class="blog_content">
-                <h4><a href="#"><?= $bl['title'] ?></a></h4>
-                <div class="post_meta"><p><a href="#"><?= $bl['tag'] ?></a> / <?= $bl['date'] ?></p></div>
-                <div class="post_desc"><p>Читайте наши советы по обслуживанию и ремонту автомобиля...</p></div>
-                <footer class="post_readmore"><a href="#">Читать далее</a></footer>
-              </figcaption>
-            </figure>
-          </article>
-        </div>
+        <article class="single_blog">
+          <figure>
+            <div class="blog_thumb"><a href="#"><img src="<?= APP_URL ?>/assets/img/blog/<?= $bl['img'] ?>" alt="<?= $bl['title'] ?>"></a></div>
+            <figcaption class="blog_content">
+              <h4><a href="#"><?= $bl['title'] ?></a></h4>
+              <div class="post_meta"><p><a href="#"><?= $bl['tag'] ?></a> / <?= $bl['date'] ?></p></div>
+              <div class="post_desc"><p>Читайте наши советы по обслуживанию и ремонту автомобиля...</p></div>
+              <footer class="post_readmore"><a href="#">Читать далее</a></footer>
+            </figcaption>
+          </figure>
+        </article>
         <?php endforeach; ?>
       </div>
     </div>
