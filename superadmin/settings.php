@@ -8,8 +8,8 @@ $errors  = [];
 $success = false;
 
 // Load all settings
-$settingsRaw = $db->query("SELECT setting_key, setting_value FROM site_settings")->fetchAll();
-$settings = array_column($settingsRaw, 'setting_value', 'setting_key');
+$settingsRaw = $db->query("SELECT `key`, `value` FROM site_settings")->fetchAll();
+$settings = array_column($settingsRaw, 'value', 'key');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'footer_about',
     ];
 
-    $stmt = $db->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=?");
+    $stmt = $db->prepare("INSERT INTO site_settings (`key`, `value`) VALUES (?,?) ON DUPLICATE KEY UPDATE `value`=?");
     foreach ($allowed as $key) {
         $val = trim($_POST[$key] ?? '');
         $stmt->execute([$key, $val, $val]);
