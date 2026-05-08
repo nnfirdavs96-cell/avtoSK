@@ -8,6 +8,7 @@ $perPage= 16;
 
 $parts = [];
 $total = 0;
+$totalPages = 1;
 
 if (mb_strlen($q) >= 2) {
     $db     = getDB();
@@ -47,81 +48,155 @@ if (mb_strlen($q) >= 2) {
     $allParams  = array_merge($params, [$q, $q.'%']);
     $st->execute($allParams);
     $parts = $st->fetchAll();
-} else {
-    $totalPages = 1;
 }
 
 $pageTitle = $q ? 'Поиск: ' . sanitize($q) : 'Поиск';
 require_once dirname(__DIR__) . '/includes/header.php';
 ?>
 
-<div class="container" style="padding:24px 0 40px;">
-  <h1 style="font-size:1.5rem;font-weight:800;color:#333;margin-bottom:16px;">
-    <?php if ($q): ?>
-    Результаты поиска: «<?= sanitize($q) ?>»
-    <?php else: ?>
-    Поиск
-    <?php endif; ?>
-  </h1>
-
-  <!-- Search form -->
-  <form action="" method="get" style="margin-bottom:24px;">
-    <div style="display:flex;gap:10px;max-width:600px;">
-      <input type="text" name="q" class="az-input" value="<?= sanitize($q) ?>"
-             placeholder="Номер детали или название..." style="flex:1;">
-      <button type="submit" class="az-btn az-btn-primary">Искать</button>
-    </div>
-  </form>
-
-  <?php if (mb_strlen($q) < 2 && $q): ?>
-  <div class="az-alert az-alert-warning">Введите минимум 2 символа для поиска.</div>
-  <?php elseif ($q && empty($parts)): ?>
-  <div class="az-alert az-alert-info">По запросу «<?= sanitize($q) ?>» ничего не найдено. Попробуйте другой номер или название.</div>
-  <?php elseif (!empty($parts)): ?>
-  <p style="color:#999;font-size:13px;margin-bottom:16px;">Найдено: <?= $total ?> позиций</p>
-  <div class="az-shop-grid-4">
-    <?php foreach ($parts as $p):
-      $stock = getStockStatus((int)$p['stock']);
-    ?>
-    <div class="az-part-card">
-      <div class="az-part-card-img">
-        <a href="<?= APP_URL ?>/catalog/part.php?id=<?= $p['id'] ?>">
-          <div class="az-part-card-img-placeholder">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="2" y="7" width="20" height="10" rx="1"/></svg>
-          </div>
-        </a>
-        <span class="az-part-number-badge"><?= sanitize($p['part_number']) ?></span>
+<!--breadcrumb area start-->
+<div class="breadcrumb_area">
+  <div class="container">
+    <div class="row"><div class="col-12">
+      <div class="breadcrumb_content">
+        <ul>
+          <li><a href="<?= APP_URL ?>/index.php">Главная</a></li>
+          <li class="active">Поиск</li>
+        </ul>
       </div>
-      <div class="az-part-card-body">
-        <div class="az-part-card-brand"><?= sanitize($p['brand_name']) ?></div>
-        <div class="az-part-card-name"><a href="<?= APP_URL ?>/catalog/part.php?id=<?= $p['id'] ?>"><?= sanitize(truncate($p['name'],55)) ?></a></div>
-        <div class="d-flex align-items-center gap-10" style="margin-bottom:4px;">
-          <span class="az-part-card-price"><?= formatPriceInCurrency((float)$p['price']) ?></span>
-          <span class="az-badge az-badge-<?= $stock['class'] ?>"><?= $stock['label'] ?></span>
-        </div>
-      </div>
-      <div class="az-part-card-footer">
-        <?php if (isLoggedIn()): ?>
-        <button class="az-btn az-btn-primary az-btn-sm az-btn-block" data-add-cart="<?= $p['id'] ?>">В корзину</button>
-        <?php else: ?>
-        <a href="<?= APP_URL ?>/auth/login.php" class="az-btn az-btn-outline az-btn-sm az-btn-block">Войти</a>
-        <?php endif; ?>
-      </div>
-    </div>
-    <?php endforeach; ?>
+    </div></div>
   </div>
-
-  <?php if ($totalPages > 1): ?>
-  <div class="az-pagination">
-    <?php $qp = $_GET;
-    if ($page > 1): $qp['page'] = $page-1; ?><a href="?<?= http_build_query($qp) ?>" class="az-page-link">‹</a><?php endif; ?>
-    <?php for ($i=max(1,$page-2);$i<=min($totalPages,$page+2);$i++): $qp['page']=$i; ?>
-    <a href="?<?= http_build_query($qp) ?>" class="az-page-link <?= $i==$page?'active':'' ?>"><?= $i ?></a>
-    <?php endfor; ?>
-    <?php if ($page < $totalPages): $qp['page']=$page+1; ?><a href="?<?= http_build_query($qp) ?>" class="az-page-link">›</a><?php endif; ?>
-  </div>
-  <?php endif; ?>
-  <?php endif; ?>
 </div>
+<!--breadcrumb area end-->
+
+<!--search results area start-->
+<div class="shop_main_area mb-70">
+  <div class="container">
+
+    <!-- Search form -->
+    <div class="row" style="margin-bottom:30px;">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <form action="" method="get">
+          <div style="display:flex;gap:0;border:2px solid #e74c3c;border-radius:4px;overflow:hidden;">
+            <input type="text" name="q" value="<?= sanitize($q) ?>"
+                   placeholder="Номер детали или название..."
+                   style="flex:1;padding:12px 18px;border:none;outline:none;font-size:15px;color:#333;">
+            <button type="submit" class="button" style="border-radius:0;padding:12px 28px;white-space:nowrap;">
+              <i class="fa fa-search"></i> Найти
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <?php if (mb_strlen($q) >= 1 && mb_strlen($q) < 2): ?>
+    <div class="row"><div class="col-12">
+      <p style="text-align:center;color:#888;padding:40px 0;">Введите минимум 2 символа для поиска.</p>
+    </div></div>
+
+    <?php elseif ($q && empty($parts)): ?>
+    <div class="row"><div class="col-12 text-center" style="padding:80px 0;">
+      <i class="fa fa-search fa-3x" style="color:#ccc;margin-bottom:20px;display:block;"></i>
+      <p style="color:#999;font-size:16px;">По запросу «<?= sanitize($q) ?>» ничего не найдено.</p>
+      <p style="color:#bbb;font-size:13px;">Попробуйте другой номер детали или название.</p>
+      <a href="<?= APP_URL ?>/catalog/index.php" class="button" style="margin-top:20px;display:inline-block;padding:12px 30px;">В каталог</a>
+    </div></div>
+
+    <?php elseif (!empty($parts)): ?>
+
+    <!-- Toolbar -->
+    <div class="shop_toolbar_wrapper" style="margin-bottom:20px;">
+      <div class="shop_toolbar_result">
+        <p>По запросу «<strong><?= sanitize($q) ?></strong>» найдено <strong><?= $total ?></strong> результатов</p>
+      </div>
+    </div>
+
+    <!-- Products grid -->
+    <div class="row shop_wrapper">
+      <?php
+      $gi = 1;
+      foreach ($parts as $p):
+        $stock = getStockStatus((int)$p['stock']);
+        $img1 = (($gi-1)%12)+1;
+        $img2 = ($gi%12)+1;
+        $gi++;
+      ?>
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <article class="single_product">
+          <figure>
+            <div class="product_thumb">
+              <a class="primary_img" href="<?= APP_URL ?>/catalog/part.php?id=<?= $p['id'] ?>">
+                <img src="<?= APP_URL ?>/assets/img/product/product<?= $img1 ?>.jpg" alt="<?= sanitize($p['name']) ?>">
+              </a>
+              <a class="secondary_img" href="<?= APP_URL ?>/catalog/part.php?id=<?= $p['id'] ?>">
+                <img src="<?= APP_URL ?>/assets/img/product/product<?= $img2 ?>.jpg" alt="<?= sanitize($p['name']) ?>">
+              </a>
+              <?php if ($p['stock'] > 0): ?>
+              <div class="label_product"><span class="label_new">В наличии</span></div>
+              <?php else: ?>
+              <div class="label_product"><span class="label_sale">Нет</span></div>
+              <?php endif; ?>
+              <div class="quick_button">
+                <a href="<?= APP_URL ?>/catalog/part.php?id=<?= $p['id'] ?>" title="Подробнее"><i class="icon-eye"></i></a>
+              </div>
+            </div>
+            <div class="product_content">
+              <div class="product_content_inner">
+                <p class="manufacture_product">
+                  <a href="<?= APP_URL ?>/catalog/index.php?brand=<?= (int)$p['brand_id'] ?>"><?= sanitize($p['brand_name'] ?? '') ?></a>
+                </p>
+                <h4 class="product_name">
+                  <a href="<?= APP_URL ?>/catalog/part.php?id=<?= $p['id'] ?>"><?= sanitize(truncate($p['name'],55)) ?></a>
+                </h4>
+                <p style="font-size:11px;color:#aaa;font-family:monospace;margin-bottom:6px;"><?= sanitize($p['part_number']) ?></p>
+                <div class="price_box">
+                  <span class="current_price"><?= formatPriceInCurrency((float)$p['price']) ?></span>
+                </div>
+              </div>
+              <div class="action_links">
+                <ul>
+                  <?php if (isLoggedIn()): ?>
+                  <li class="add_to_cart"><a href="#" data-add-cart="<?= $p['id'] ?>" title="В корзину">В корзину</a></li>
+                  <?php else: ?>
+                  <li class="add_to_cart"><a href="<?= APP_URL ?>/auth/login.php">Войти</a></li>
+                  <?php endif; ?>
+                </ul>
+              </div>
+            </div>
+          </figure>
+        </article>
+      </div>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- Pagination -->
+    <?php if ($totalPages > 1): ?>
+    <div class="shop_page_nav">
+      <ul class="page_numbers">
+        <?php
+        $qp = $_GET;
+        if ($page > 1) { $qp['page'] = $page-1; echo '<li><a href="?'.http_build_query($qp).'">‹</a></li>'; }
+        for ($i = max(1,$page-2); $i <= min($totalPages,$page+2); $i++) {
+            $qp['page'] = $i;
+            $cls = $i===$page ? ' class="current"' : '';
+            echo '<li'.$cls.'><a href="?'.http_build_query($qp).'">'.$i.'</a></li>';
+        }
+        if ($page < $totalPages) { $qp['page'] = $page+1; echo '<li><a href="?'.http_build_query($qp).'">›</a></li>'; }
+        ?>
+      </ul>
+    </div>
+    <?php endif; ?>
+
+    <?php else: ?>
+    <!-- No query yet -->
+    <div class="row"><div class="col-12 text-center" style="padding:60px 0;">
+      <i class="fa fa-search fa-4x" style="color:#e74c3c;opacity:.4;margin-bottom:20px;display:block;"></i>
+      <p style="color:#888;font-size:16px;">Введите номер детали или название для поиска.</p>
+    </div></div>
+    <?php endif; ?>
+
+  </div>
+</div>
+<!--search results area end-->
 
 <?php require_once dirname(__DIR__) . '/includes/footer.php'; ?>

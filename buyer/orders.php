@@ -32,96 +32,147 @@ require_once dirname(__DIR__) . '/includes/header.php';
 require_once dirname(__DIR__) . '/includes/nav.php';
 ?>
 
-<div class="az-admin-page">
-<div class="az-admin-navbar">
-  <a href="<?= APP_URL ?>/index.php" class="az-admin-logo">АВТО<span>ЗАПЧАСТЬ</span></a>
-  <ul class="az-admin-nav-links">
-    <li><a href="<?= APP_URL ?>/catalog/index.php">Каталог</a></li>
-    <li><a href="<?= APP_URL ?>/auth/logout.php">Выйти</a></li>
-  </ul>
-</div>
-<div class="dash-layout">
-  <div class="dash-sidebar"><?php renderNav(); ?></div>
-  <div class="dash-main">
-    <div class="dash-heading">МОИ ЗАКАЗЫ</div>
-
-    <?php if ($orderDetail): ?>
-    <div class="az-card mb-24">
-      <div class="az-card-header">
-        <div>
-          <h3>ЗАКАЗ #<?= $orderDetail['id'] ?></h3>
-          <div style="font-size:11px;color:var(--text-muted);"><?= date('d.m.Y H:i', strtotime($orderDetail['created_at'])) ?></div>
-        </div>
-        <span class="az-status az-status-<?= $orderDetail['status'] ?>"><?= getOrderStatusLabel($orderDetail['status']) ?></span>
+<!--breadcrumb area start-->
+<div class="breadcrumb_area">
+  <div class="container">
+    <div class="row"><div class="col-12">
+      <div class="breadcrumb_content">
+        <ul>
+          <li><a href="<?= APP_URL ?>/index.php">Главная</a></li>
+          <li><a href="<?= APP_URL ?>/buyer/index.php">Кабинет</a></li>
+          <li class="active">Мои заказы</li>
+        </ul>
       </div>
-      <div class="az-card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-          <div>
-            <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Адрес доставки</div>
-            <p style="font-size:13px;color:var(--text-secondary);"><?= nl2br(sanitize($orderDetail['shipping_address'])) ?></p>
-          </div>
-          <?php if ($orderDetail['notes']): ?>
-          <div>
-            <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Примечания</div>
-            <p style="font-size:13px;color:var(--text-secondary);"><?= nl2br(sanitize($orderDetail['notes'])) ?></p>
-          </div>
-          <?php endif; ?>
-        </div>
-        <div class="az-table-wrap">
-          <table class="az-table">
-            <thead><tr><th>Номер</th><th>Наименование</th><th>Бренд</th><th style="text-align:center;">Кол-во</th><th style="text-align:right;">Цена</th><th style="text-align:right;">Сумма</th></tr></thead>
-            <tbody>
-              <?php foreach ($orderItems as $item): ?>
-              <tr>
-                <td><span class="mono" style="color:var(--accent);"><?= sanitize($item['part_number']) ?></span></td>
-                <td><a href="<?= APP_URL ?>/catalog/part.php?id=<?= $item['part_id'] ?>" style="color:var(--text-primary);text-decoration:none;font-size:13px;"><?= sanitize($item['part_name']) ?></a></td>
-                <td style="color:var(--text-muted);font-size:12px;"><?= sanitize($item['brand_name']) ?></td>
-                <td style="text-align:center;font-family:monospace;"><?= $item['quantity'] ?></td>
-                <td style="text-align:right;font-family:monospace;font-size:13px;color:var(--text-secondary);"><?= formatPrice($item['unit_price']) ?></td>
-                <td style="text-align:right;font-family:monospace;color:var(--accent);"><?= formatPrice($item['unit_price']*$item['quantity']) ?></td>
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
-        </div>
-        <div style="text-align:right;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
-          <span style="font-size:11px;color:var(--text-muted);">ИТОГО: </span>
-          <span style="font-size:1.5rem;font-weight:900;color:var(--accent);"><?= formatPrice($orderDetail['total_amount']) ?></span>
-        </div>
-      </div>
-      <div class="az-card-footer">
-        <a href="<?= APP_URL ?>/buyer/orders.php" class="az-admin-btn az-admin-btn-outline az-admin-btn-sm">← Все заказы</a>
-      </div>
-    </div>
-    <?php endif; ?>
-
-    <?php if (empty($orders)): ?>
-    <div class="az-no-data">
-      <div class="az-no-data-icon">📦</div>
-      <p>Заказов пока нет.</p>
-      <a href="<?= APP_URL ?>/catalog/index.php" class="az-admin-btn az-admin-btn-primary" style="margin-top:14px;">В каталог</a>
-    </div>
-    <?php else: ?>
-    <div class="az-table-wrap">
-      <table class="az-table">
-        <thead><tr><th>#</th><th>Дата</th><th>Сумма</th><th>Статус</th><th>Обновлён</th><th></th></tr></thead>
-        <tbody>
-          <?php foreach ($orders as $o): ?>
-          <tr>
-            <td><span class="mono" style="color:var(--accent);">#<?= $o['id'] ?></span></td>
-            <td style="color:var(--text-muted);font-size:12px;"><?= date('d.m.Y H:i', strtotime($o['created_at'])) ?></td>
-            <td style="font-family:monospace;color:var(--accent);"><?= formatPrice($o['total_amount']) ?></td>
-            <td><span class="az-status az-status-<?= $o['status'] ?>"><?= getOrderStatusLabel($o['status']) ?></span></td>
-            <td style="color:var(--text-muted);font-size:12px;"><?= date('d.m.Y H:i', strtotime($o['updated_at'])) ?></td>
-            <td><a href="?id=<?= $o['id'] ?>" class="az-admin-btn az-admin-btn-outline az-admin-btn-sm">Детали</a></td>
-          </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
-    <?php endif; ?>
+    </div></div>
   </div>
 </div>
+<!--breadcrumb area end-->
+
+<div class="account_area">
+  <div class="container">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4">
+        <div class="account_sidebar">
+          <div class="widget_list">
+            <h3 class="widget_title">Мой аккаунт</h3>
+            <?php renderNav(); ?>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="col-lg-9 col-md-8">
+
+        <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #e74c3c;">
+          Мои заказы
+        </div>
+
+        <!-- Order detail view -->
+        <?php if ($orderDetail): ?>
+        <div class="account_card" style="margin-bottom:24px;">
+          <div class="account_card_header">
+            <div>
+              <h3>Заказ #<?= $orderDetail['id'] ?></h3>
+              <div style="font-size:12px;color:#888;font-weight:400;margin-top:4px;"><?= date('d.m.Y H:i', strtotime($orderDetail['created_at'])) ?></div>
+            </div>
+            <span class="badge_status badge_<?= $orderDetail['status'] ?>"><?= getOrderStatusLabel($orderDetail['status']) ?></span>
+          </div>
+          <div class="account_card_body">
+            <div class="row" style="margin-bottom:16px;">
+              <div class="col-md-6">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:6px;">Адрес доставки</div>
+                <p style="font-size:13px;color:#555;line-height:1.6;"><?= nl2br(sanitize($orderDetail['shipping_address'])) ?></p>
+              </div>
+              <?php if ($orderDetail['notes']): ?>
+              <div class="col-md-6">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:6px;">Примечания</div>
+                <p style="font-size:13px;color:#555;line-height:1.6;"><?= nl2br(sanitize($orderDetail['notes'])) ?></p>
+              </div>
+              <?php endif; ?>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="account_table">
+                <thead>
+                  <tr>
+                    <th>Номер</th>
+                    <th>Наименование</th>
+                    <th>Бренд</th>
+                    <th style="text-align:center;">Кол-во</th>
+                    <th style="text-align:right;">Цена</th>
+                    <th style="text-align:right;">Сумма</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($orderItems as $item): ?>
+                  <tr>
+                    <td style="font-family:monospace;color:#e74c3c;font-size:12px;"><?= sanitize($item['part_number']) ?></td>
+                    <td><a href="<?= APP_URL ?>/catalog/part.php?id=<?= $item['part_id'] ?>" style="color:#333;text-decoration:none;font-size:13px;"><?= sanitize($item['part_name']) ?></a></td>
+                    <td style="color:#888;font-size:12px;"><?= sanitize($item['brand_name']) ?></td>
+                    <td style="text-align:center;font-family:monospace;"><?= $item['quantity'] ?></td>
+                    <td style="text-align:right;font-family:monospace;font-size:13px;color:#888;"><?= formatPriceInCurrency($item['unit_price']) ?></td>
+                    <td style="text-align:right;font-family:monospace;font-weight:700;color:#e74c3c;"><?= formatPriceInCurrency($item['unit_price']*$item['quantity']) ?></td>
+                  </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+            <div style="text-align:right;margin-top:16px;padding-top:14px;border-top:2px solid #e74c3c;">
+              <span style="font-size:13px;color:#888;margin-right:12px;">ИТОГО:</span>
+              <span style="font-size:1.5rem;font-weight:900;color:#e74c3c;"><?= formatPriceInCurrency($orderDetail['total_amount']) ?></span>
+            </div>
+          </div>
+          <div style="padding:14px 20px;border-top:1px solid #f0f0f0;">
+            <a href="<?= APP_URL ?>/buyer/orders.php" class="account_btn account_btn_sm">← Все заказы</a>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Orders list -->
+        <?php if (empty($orders)): ?>
+        <div class="account_no_data">
+          <div class="account_no_data_icon">📦</div>
+          <p>Заказов пока нет.</p>
+          <a href="<?= APP_URL ?>/catalog/index.php" class="account_btn account_btn_primary" style="margin-top:14px;display:inline-block;padding:12px 30px;">В каталог</a>
+        </div>
+        <?php else: ?>
+        <div class="account_card">
+          <div class="account_card_header">
+            <h3>История заказов</h3>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="account_table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Дата</th>
+                  <th>Сумма</th>
+                  <th>Статус</th>
+                  <th>Обновлён</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($orders as $o): ?>
+                <tr>
+                  <td style="font-family:monospace;color:#e74c3c;font-weight:700;">#<?= $o['id'] ?></td>
+                  <td style="color:#888;font-size:12px;"><?= date('d.m.Y H:i', strtotime($o['created_at'])) ?></td>
+                  <td style="font-family:monospace;font-weight:600;"><?= formatPriceInCurrency($o['total_amount']) ?></td>
+                  <td><span class="badge_status badge_<?= $o['status'] ?>"><?= getOrderStatusLabel($o['status']) ?></span></td>
+                  <td style="color:#888;font-size:12px;"><?= date('d.m.Y', strtotime($o['updated_at'])) ?></td>
+                  <td><a href="?id=<?= $o['id'] ?>" class="account_btn account_btn_sm">Детали</a></td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <?php endif; ?>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 <?php require_once dirname(__DIR__) . '/includes/footer.php'; ?>

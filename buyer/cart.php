@@ -55,92 +55,171 @@ require_once dirname(__DIR__) . '/includes/header.php';
 require_once dirname(__DIR__) . '/includes/nav.php';
 ?>
 
-<div class="az-admin-page">
-<div class="az-admin-navbar">
-  <a href="<?= APP_URL ?>/index.php" class="az-admin-logo">АВТО<span>ЗАПЧАСТЬ</span></a>
-  <ul class="az-admin-nav-links">
-    <li><a href="<?= APP_URL ?>/catalog/index.php">Каталог</a></li>
-    <li><a href="<?= APP_URL ?>/auth/logout.php">Выйти</a></li>
-  </ul>
-</div>
-<div class="dash-layout">
-  <div class="dash-sidebar"><?php renderNav(); ?></div>
-  <div class="dash-main">
-    <div class="dash-heading">КОРЗИНА</div>
-
-    <?php if (empty($cartItems)): ?>
-    <div class="az-no-data">
-      <div class="az-no-data-icon">🛒</div>
-      <p>Ваша корзина пуста.</p>
-      <a href="<?= APP_URL ?>/catalog/index.php" class="az-admin-btn az-admin-btn-primary" style="margin-top:16px;">Перейти в каталог</a>
-    </div>
-    <?php else: ?>
-    <div class="az-cart-grid">
-      <div>
-        <div class="az-card">
-          <div class="az-card-header"><h3>ТОВАРЫ (<?= count($cartItems) ?>)</h3></div>
-          <div class="az-table-wrap">
-            <table class="az-table">
-              <thead>
-                <tr><th>Товар</th><th style="text-align:center;">Кол-во</th><th style="text-align:right;">Цена</th><th style="text-align:right;">Сумма</th><th></th></tr>
-              </thead>
-              <tbody>
-                <?php foreach ($cartItems as $item): ?>
-                <tr data-cart-row="<?= (int)$item['part_id'] ?>">
-                  <td>
-                    <div class="mono" style="color:var(--accent);margin-bottom:2px;"><?= sanitize($item['part_number']) ?></div>
-                    <a href="<?= APP_URL ?>/catalog/part.php?id=<?= $item['part_id'] ?>" style="color:var(--text-primary);text-decoration:none;font-size:13px;"><?= sanitize(truncate($item['name'],50)) ?></a>
-                    <div style="font-size:11px;color:var(--text-muted);"><?= sanitize($item['brand_name']) ?></div>
-                  </td>
-                  <td style="text-align:center;">
-                    <div class="az-qty-control" style="justify-content:center;">
-                      <button class="az-qty-btn" data-qty-minus>−</button>
-                      <input type="number" class="az-qty-num" data-qty-input value="<?= (int)$item['quantity'] ?>" min="1" max="99" readonly>
-                      <button class="az-qty-btn" data-qty-plus>+</button>
-                    </div>
-                  </td>
-                  <td style="text-align:right;font-family:monospace;font-size:13px;color:var(--text-secondary);"><?= formatPrice($item['price']) ?></td>
-                  <td style="text-align:right;font-family:monospace;color:var(--accent);" data-row-subtotal><?= formatPrice($item['price'] * $item['quantity']) ?></td>
-                  <td><button class="az-admin-btn az-admin-btn-danger az-admin-btn-sm" data-cart-remove="<?= (int)$item['part_id'] ?>">✕</button></td>
-                </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
+<!--breadcrumb area start-->
+<div class="breadcrumb_area">
+  <div class="container">
+    <div class="row"><div class="col-12">
+      <div class="breadcrumb_content">
+        <ul>
+          <li><a href="<?= APP_URL ?>/index.php">Главная</a></li>
+          <li><a href="<?= APP_URL ?>/buyer/index.php">Кабинет</a></li>
+          <li class="active">Корзина</li>
+        </ul>
       </div>
-      <div>
-        <div class="az-order-summary" style="background:var(--bg-card);border:1px solid var(--border);">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:12px;">// Итого</div>
-          <?php foreach ($cartItems as $item): ?>
-          <div class="az-summary-row" style="border-color:var(--border);color:var(--text-secondary);">
-            <span style="font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?= sanitize(truncate($item['name'],28)) ?></span>
-            <span style="font-family:monospace;font-size:12px;"><?= $item['quantity'] ?> × <?= formatPrice($item['price']) ?></span>
-          </div>
-          <?php endforeach; ?>
-          <div class="az-summary-total" style="border-color:var(--accent);">
-            <span style="font-size:11px;text-transform:uppercase;color:var(--text-muted);">Итого</span>
-            <span id="cart-total" style="font-size:1.6rem;font-weight:900;color:var(--accent);"><?= formatPrice($cartTotal) ?></span>
-          </div>
-          <form method="post" action="" style="margin-top:16px;">
-            <input type="hidden" name="csrf_token" value="<?= sanitize($csrf) ?>">
-            <input type="hidden" name="checkout" value="1">
-            <div class="az-form-group">
-              <label class="az-form-label">Адрес доставки *</label>
-              <textarea name="address" class="az-form-textarea" rows="3" placeholder="г. Москва, ул. Пример, д. 1" required></textarea>
-            </div>
-            <div class="az-form-group">
-              <label class="az-form-label">Примечания</label>
-              <textarea name="notes" class="az-form-textarea" rows="2" placeholder="Удобное время..."></textarea>
-            </div>
-            <button type="submit" class="az-admin-btn az-admin-btn-primary az-admin-btn-block az-admin-btn-lg">ОФОРМИТЬ ЗАКАЗ</button>
-          </form>
-        </div>
-      </div>
-    </div>
-    <?php endif; ?>
+    </div></div>
   </div>
 </div>
+<!--breadcrumb area end-->
+
+<div class="account_area">
+  <div class="container">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4">
+        <div class="account_sidebar">
+          <div class="widget_list">
+            <h3 class="widget_title">Мой аккаунт</h3>
+            <?php renderNav(); ?>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="col-lg-9 col-md-8">
+
+        <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #e74c3c;">
+          Корзина <?php if (!empty($cartItems)): ?><span style="font-size:14px;color:#888;font-weight:400;">(<?= count($cartItems) ?> позиций)</span><?php endif; ?>
+        </div>
+
+        <?php if (empty($cartItems)): ?>
+        <div class="account_no_data">
+          <div class="account_no_data_icon">🛒</div>
+          <p>Ваша корзина пуста.</p>
+          <a href="<?= APP_URL ?>/catalog/index.php" class="account_btn account_btn_primary" style="margin-top:16px;display:inline-block;padding:12px 30px;">Перейти в каталог</a>
+        </div>
+
+        <?php else: ?>
+        <div class="account_cart_grid">
+
+          <!-- Cart items -->
+          <div>
+            <div class="account_card">
+              <div class="account_card_header">
+                <h3>Товары</h3>
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="account_table">
+                  <thead>
+                    <tr>
+                      <th>Товар</th>
+                      <th style="text-align:center;">Кол-во</th>
+                      <th style="text-align:right;">Цена</th>
+                      <th style="text-align:right;">Сумма</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($cartItems as $item): ?>
+                    <tr data-cart-row="<?= (int)$item['part_id'] ?>">
+                      <td>
+                        <div style="color:#e74c3c;font-family:monospace;font-size:12px;margin-bottom:2px;"><?= sanitize($item['part_number']) ?></div>
+                        <a href="<?= APP_URL ?>/catalog/part.php?id=<?= $item['part_id'] ?>" style="color:#333;text-decoration:none;font-size:13px;font-weight:500;"><?= sanitize(truncate($item['name'],50)) ?></a>
+                        <div style="font-size:11px;color:#aaa;"><?= sanitize($item['brand_name']) ?></div>
+                      </td>
+                      <td style="text-align:center;">
+                        <div class="account_qty_control">
+                          <button type="button" class="account_qty_btn" data-qty-minus>−</button>
+                          <input type="number" class="account_qty_num" data-qty-input value="<?= (int)$item['quantity'] ?>" min="1" max="99" readonly>
+                          <button type="button" class="account_qty_btn" data-qty-plus>+</button>
+                        </div>
+                      </td>
+                      <td style="text-align:right;font-family:monospace;font-size:13px;color:#888;"><?= formatPriceInCurrency($item['price']) ?></td>
+                      <td style="text-align:right;font-family:monospace;font-weight:700;color:#e74c3c;" data-row-subtotal><?= formatPriceInCurrency($item['price'] * $item['quantity']) ?></td>
+                      <td>
+                        <button type="button" class="account_btn account_btn_danger account_btn_sm" data-cart-remove="<?= (int)$item['part_id'] ?>" style="padding:4px 10px;">✕</button>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order summary -->
+          <div>
+            <div class="account_order_summary">
+              <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#333;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f0f0f0;">Итого</div>
+              <?php foreach ($cartItems as $item): ?>
+              <div class="account_summary_row">
+                <span style="font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?= sanitize(truncate($item['name'],28)) ?></span>
+                <span style="font-family:monospace;font-size:12px;"><?= $item['quantity'] ?> × <?= formatPriceInCurrency($item['price']) ?></span>
+              </div>
+              <?php endforeach; ?>
+              <div class="account_summary_total">
+                <span style="font-size:13px;color:#888;">Итого</span>
+                <span id="cart-total" style="font-size:1.5rem;font-weight:900;color:#e74c3c;"><?= formatPriceInCurrency($cartTotal) ?></span>
+              </div>
+
+              <form method="post" action="" style="margin-top:20px;">
+                <input type="hidden" name="csrf_token" value="<?= sanitize($csrf) ?>">
+                <input type="hidden" name="checkout" value="1">
+                <div class="account_form_group">
+                  <label class="account_form_label">Адрес доставки *</label>
+                  <textarea name="address" class="account_form_textarea" rows="3" placeholder="г. Москва, ул. Пример, д. 1, кв. 5" required></textarea>
+                </div>
+                <div class="account_form_group">
+                  <label class="account_form_label">Примечания</label>
+                  <textarea name="notes" class="account_form_textarea" rows="2" placeholder="Удобное время доставки..."></textarea>
+                </div>
+                <button type="submit" class="button account_btn_block" style="width:100%;padding:14px;font-size:14px;">
+                  Оформить заказ
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+        <?php endif; ?>
+
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+(function(){
+  var AZ_BASE = (function(){
+    var s = document.querySelector('script[src*="main.js"]');
+    return s ? s.src.replace(/\/assets\/js\/main\.js.*/, '') : '';
+  }());
+
+  document.querySelectorAll('[data-qty-minus],[data-qty-plus]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var row = this.closest('tr[data-cart-row]');
+      if (!row) return;
+      var partId = row.dataset.cartRow;
+      var inp = row.querySelector('[data-qty-input]');
+      var cur = parseInt(inp.value) || 1;
+      var next = this.hasAttribute('data-qty-minus') ? Math.max(1, cur-1) : Math.min(99, cur+1);
+      if (next === cur) return;
+      inp.value = next;
+      fetch(AZ_BASE + '/api/cart.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({action:'update', part_id: parseInt(partId), quantity: next})
+      }).then(function(r){ return r.json(); }).then(function(data){
+        if (data.success) {
+          var sub = row.querySelector('[data-row-subtotal]');
+          if (sub && data.row_subtotal_fmt) sub.textContent = data.row_subtotal_fmt;
+          var tot = document.getElementById('cart-total');
+          if (tot && data.total_fmt) tot.textContent = data.total_fmt;
+        }
+      });
+    });
+  });
+}());
+</script>
 
 <?php require_once dirname(__DIR__) . '/includes/footer.php'; ?>

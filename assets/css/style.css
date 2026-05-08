@@ -11521,3 +11521,69 @@ mark.highlight{background:#ffe08a;padding:0 2px;border-radius:2px}
 .mb-24{margin-bottom:24px!important}
 .mt-16{margin-top:16px!important}
 .mt-24{margin-top:24px!important}
+
+/* ===== Account pages (buyer - light theme) ===== */
+.account_area{padding:60px 0}
+.account_sidebar .widget_list{background:#fff;border:1px solid #e8e8e8;border-radius:4px;overflow:hidden;margin-bottom:30px}
+.account_sidebar .widget_title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#333;padding:14px 18px;margin:0;border-bottom:1px solid #f0f0f0;background:#fafafa}
+.account_sidebar .az-side-nav{background:transparent;border:none;padding:0}
+.account_sidebar .az-nav-group{padding:0}
+.account_sidebar .az-nav-label{background:#f5f5f5;color:#666;padding:8px 18px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;border-bottom:1px solid #f0f0f0}
+.account_sidebar .az-side-nav ul{list-style:none;padding:0;margin:0}
+.account_sidebar .az-side-nav ul li a{display:block;padding:10px 18px;color:#555;font-size:13px;border-bottom:1px solid #f5f5f5;text-decoration:none;transition:all .2s}
+.account_sidebar .az-side-nav ul li a:hover,.account_sidebar .az-side-nav ul li a.active{color:#e74c3c;padding-left:24px;background:#fff8f8}
+/* Account content cards */
+.account_card{background:#fff;border:1px solid #e8e8e8;border-radius:4px;margin-bottom:24px}
+.account_card_header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f0f0f0}
+.account_card_header h3{margin:0;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#333}
+.account_card_body{padding:20px}
+.account_stat_grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:768px){.account_stat_grid{grid-template-columns:1fr 1fr}}
+.account_stat_card{background:#fff;border:1px solid #e8e8e8;border-radius:4px;padding:20px;text-align:center}
+.account_stat_label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px}
+.account_stat_value{font-size:2rem;font-weight:900;color:#e74c3c;line-height:1}
+/* Light tables */
+.account_table{width:100%;border-collapse:collapse}
+.account_table th{padding:10px 14px;background:#f9f9f9;font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #eee;white-space:nowrap}
+.account_table td{padding:12px 14px;border-bottom:1px solid #f5f5f5;font-size:13px;color:#444;vertical-align:middle}
+.account_table tbody tr:hover{background:#fafafa}
+/* Light form elements */
+.account_form_group{margin-bottom:18px}
+.account_form_label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.account_form_input,.account_form_textarea{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:4px;font-size:14px;color:#333;outline:none;transition:border-color .2s;box-sizing:border-box}
+.account_form_input:focus,.account_form_textarea:focus{border-color:#e74c3c}
+.account_form_input[readonly]{background:#f9f9f9;opacity:.7}
+.account_form_textarea{resize:vertical;min-height:80px}
+/* Cart in account area */
+.account_cart_grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+@media(max-width:960px){.account_cart_grid{grid-template-columns:1fr}}
+.account_order_summary{background:#fff;border:1px solid #e8e8e8;border-radius:4px;padding:24px}
+.account_summary_row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f5f5f5;font-size:13px;color:#555}
+.account_summary_total{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;border-top:2px solid #e74c3c;margin-top:10px}
+/* Light qty control */
+.account_qty_control{display:inline-flex;align-items:center;border:1px solid #ddd;border-radius:4px;overflow:hidden}
+.account_qty_btn{width:30px;height:30px;background:#f8f8f8;border:none;cursor:pointer;font-size:16px;color:#333;transition:background .15s}
+.account_qty_btn:hover{background:#e74c3c;color:#fff}
+.account_qty_num{width:40px;height:30px;text-align:center;border:none;border-left:1px solid #ddd;border-right:1px solid #ddd;font-size:13px;color:#333;background:#fff}
+/* No data light */
+.account_no_data{text-align:center;padding:60px 20px;color:#888}
+.account_no_data_icon{font-size:3rem;margin-bottom:14px}
+/* Status badges (light) */
+.badge_status{display:inline-block;padding:3px 10px;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.badge_pending{background:rgba(243,156,18,.12);color:#c97d0d}
+.badge_processing{background:rgba(52,152,219,.12);color:#2980b9}
+.badge_shipped{background:rgba(155,89,182,.12);color:#8e44ad}
+.badge_delivered{background:rgba(46,204,113,.12);color:#1a9e50}
+.badge_cancelled{background:rgba(231,76,60,.12);color:#c0392b}
+.badge_new{background:rgba(231,76,60,.12);color:#c0392b}
+.badge_confirmed{background:rgba(52,152,219,.12);color:#2980b9}
+.badge_paid{background:rgba(46,204,113,.12);color:#1a9e50}
+/* Account action btn */
+.account_btn{display:inline-block;padding:8px 18px;border:1px solid #ddd;border-radius:3px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;text-decoration:none;transition:all .2s;background:#fff;color:#333}
+.account_btn:hover{border-color:#e74c3c;color:#e74c3c;background:#fff}
+.account_btn_primary{background:#e74c3c;border-color:#e74c3c;color:#fff}
+.account_btn_primary:hover{background:#c0392b;border-color:#c0392b;color:#fff}
+.account_btn_danger{border-color:#e74c3c;color:#e74c3c}
+.account_btn_danger:hover{background:#e74c3c;color:#fff}
+.account_btn_block{display:block;width:100%;text-align:center;padding:12px}
+.account_btn_sm{padding:5px 12px;font-size:11px}
