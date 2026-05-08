@@ -37,50 +37,97 @@ $pageTitle = 'Мой профиль';
 require_once dirname(__DIR__) . '/includes/header.php';
 require_once dirname(__DIR__) . '/includes/nav.php';
 ?>
-<div class="az-admin-page">
-<div class="az-admin-navbar">
-  <a href="<?= APP_URL ?>/index.php" class="az-admin-logo">АВТО<span>ЗАПЧАСТЬ</span></a>
-  <ul class="az-admin-nav-links"><li><a href="<?= APP_URL ?>/auth/logout.php">Выйти</a></li></ul>
+
+<!--breadcrumb area start-->
+<div class="breadcrumb_area">
+  <div class="container">
+    <div class="row"><div class="col-12">
+      <div class="breadcrumb_content">
+        <ul>
+          <li><a href="<?= APP_URL ?>/index.php">Главная</a></li>
+          <li><a href="<?= APP_URL ?>/buyer/index.php">Кабинет</a></li>
+          <li class="active">Профиль</li>
+        </ul>
+      </div>
+    </div></div>
+  </div>
 </div>
-<div class="dash-layout">
-  <div class="dash-sidebar"><?php renderNav(); ?></div>
-  <div class="dash-main">
-    <div class="dash-heading">ПРОФИЛЬ</div>
-    <?php if (!empty($errors)): ?>
-    <div class="az-alert az-alert-danger"><?= implode('<br>', array_map('sanitize', $errors)) ?></div>
-    <?php endif; ?>
-    <div class="az-card" style="max-width:520px;">
-      <div class="az-card-header"><h3>ДАННЫЕ АККАУНТА</h3></div>
-      <div class="az-card-body">
-        <form method="post" action="">
-          <input type="hidden" name="csrf_token" value="<?= sanitize($csrf) ?>">
-          <div class="az-form-group">
-            <label class="az-form-label">Имя пользователя</label>
-            <input type="text" name="username" class="az-form-input" value="<?= sanitize($user['username']) ?>" required>
+<!--breadcrumb area end-->
+
+<div class="account_area">
+  <div class="container">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4">
+        <div class="account_sidebar">
+          <div class="widget_list">
+            <h3 class="widget_title">Мой аккаунт</h3>
+            <?php renderNav(); ?>
           </div>
-          <div class="az-form-group">
-            <label class="az-form-label">Email (только для чтения)</label>
-            <input type="email" class="az-form-input" value="<?= sanitize($user['email']) ?>" readonly style="opacity:.6;">
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="col-lg-9 col-md-8">
+
+        <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #e74c3c;">
+          Мой профиль
+        </div>
+
+        <?php if (!empty($errors)): ?>
+        <div style="background:#fff3f3;border:1px solid #f5c6c6;border-radius:4px;padding:14px 18px;margin-bottom:20px;color:#c0392b;font-size:13px;">
+          <?= implode('<br>', array_map('sanitize', $errors)) ?>
+        </div>
+        <?php endif; ?>
+
+        <div class="account_card" style="max-width:560px;">
+          <div class="account_card_header">
+            <h3>Данные аккаунта</h3>
           </div>
-          <div class="az-form-group">
-            <label class="az-form-label">Телефон</label>
-            <input type="tel" name="phone" class="az-form-input" value="<?= sanitize($user['phone'] ?? '') ?>" placeholder="+7 (___) ___-__-__">
+          <div class="account_card_body">
+            <form method="post" action="">
+              <input type="hidden" name="csrf_token" value="<?= sanitize($csrf) ?>">
+
+              <div class="account_form_group">
+                <label class="account_form_label">Имя пользователя *</label>
+                <input type="text" name="username" class="account_form_input" value="<?= sanitize($user['username']) ?>" required>
+              </div>
+
+              <div class="account_form_group">
+                <label class="account_form_label">Email (только для чтения)</label>
+                <input type="email" class="account_form_input" value="<?= sanitize($user['email']) ?>" readonly>
+              </div>
+
+              <div class="account_form_group">
+                <label class="account_form_label">Телефон</label>
+                <input type="tel" name="phone" class="account_form_input" value="<?= sanitize($user['phone'] ?? '') ?>" placeholder="+7 (___) ___-__-__">
+              </div>
+
+              <hr style="border:none;border-top:1px solid #f0f0f0;margin:20px 0;">
+
+              <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:14px;">Смена пароля (не обязательно)</p>
+
+              <div class="account_form_group">
+                <label class="account_form_label">Старый пароль</label>
+                <input type="password" name="old_password" class="account_form_input" placeholder="Текущий пароль">
+              </div>
+
+              <div class="account_form_group">
+                <label class="account_form_label">Новый пароль</label>
+                <input type="password" name="new_password" class="account_form_input" placeholder="Минимум 8 символов">
+              </div>
+
+              <button type="submit" class="button account_btn_block" style="width:100%;padding:14px;font-size:14px;">
+                Сохранить изменения
+              </button>
+            </form>
           </div>
-          <hr style="border-color:var(--border);margin:16px 0;">
-          <p style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:12px;">Смена пароля (не обязательно)</p>
-          <div class="az-form-group">
-            <label class="az-form-label">Старый пароль</label>
-            <input type="password" name="old_password" class="az-form-input" placeholder="Текущий пароль">
-          </div>
-          <div class="az-form-group">
-            <label class="az-form-label">Новый пароль</label>
-            <input type="password" name="new_password" class="az-form-input" placeholder="Мин. 8 символов">
-          </div>
-          <button type="submit" class="az-admin-btn az-admin-btn-primary az-admin-btn-block">СОХРАНИТЬ</button>
-        </form>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
-</div>
+
 <?php require_once dirname(__DIR__) . '/includes/footer.php'; ?>

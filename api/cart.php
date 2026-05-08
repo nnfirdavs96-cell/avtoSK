@@ -39,21 +39,24 @@ switch ($action) {
         if (!$ps->fetch()) { echo json_encode(['success'=>false,'error'=>'Товар не найден']); exit; }
         $db->prepare("INSERT INTO cart (user_id,part_id,quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity=quantity+VALUES(quantity)")
            ->execute([$userId, $partId, $qty]);
-        echo json_encode(['success'=>true,'cart_count'=>cartCount($db,$userId),'cart_total'=>cartTotal($db,$userId)]);
+        $cnt = cartCount($db,$userId); $tot = cartTotal($db,$userId);
+        echo json_encode(['success'=>true,'count'=>$cnt,'total'=>$tot,'total_fmt'=>formatPriceInCurrency($tot),'cart_count'=>$cnt,'cart_total'=>$tot]);
         break;
     case 'remove':
         $partId = (int)($data['part_id'] ?? 0);
         $db->prepare("DELETE FROM cart WHERE user_id=? AND part_id=?")->execute([$userId, $partId]);
-        echo json_encode(['success'=>true,'cart_count'=>cartCount($db,$userId),'cart_total'=>cartTotal($db,$userId)]);
+        $cnt = cartCount($db,$userId); $tot = cartTotal($db,$userId);
+        echo json_encode(['success'=>true,'count'=>$cnt,'total'=>$tot,'total_fmt'=>formatPriceInCurrency($tot),'cart_count'=>$cnt,'cart_total'=>$tot]);
         break;
     case 'update':
         $partId = (int)($data['part_id'] ?? 0);
-        $qty    = max(1, min(99, (int)($data['quantity'] ?? 1)));
+        $qty    = max(1, min(99, (int)($data['quantity'] ?? $data['qty'] ?? 1)));
         $db->prepare("UPDATE cart SET quantity=? WHERE user_id=? AND part_id=?")->execute([$qty, $userId, $partId]);
         $ss = $db->prepare("SELECT c.quantity*p.price FROM cart c JOIN parts p ON p.id=c.part_id WHERE c.user_id=? AND c.part_id=?");
         $ss->execute([$userId, $partId]);
         $rowSub = (float)$ss->fetchColumn();
-        echo json_encode(['success'=>true,'cart_count'=>cartCount($db,$userId),'cart_total'=>cartTotal($db,$userId),'row_subtotal'=>$rowSub]);
+        $cnt = cartCount($db,$userId); $tot = cartTotal($db,$userId);
+        echo json_encode(['success'=>true,'count'=>$cnt,'total'=>$tot,'total_fmt'=>formatPriceInCurrency($tot),'cart_count'=>$cnt,'cart_total'=>$tot,'row_subtotal'=>$rowSub,'row_subtotal_fmt'=>formatPriceInCurrency($rowSub)]);
         break;
     default:
         http_response_code(400);
