@@ -411,6 +411,19 @@
  
     
     
+    /*---blog carousel activation---*/
+    $('.blog_carousel').owlCarousel({
+        loop: true,
+        nav: true,
+        autoplay: false,
+        items: 4,
+        dots: false,
+        margin: 30,
+        navText: ['<i class="ion-ios-arrow-back"></i>','<i class="ion-ios-arrow-forward"></i>'],
+        responsiveClass: true,
+        responsive: {0:{items:1},768:{items:2},992:{items:3},1200:{items:4}}
+    });
+
     /*---blog column3 activation---*/
     $('.blog_column4').owlCarousel({
 		loop: true,
@@ -906,8 +919,15 @@
 })(jQuery);	
 
 /* ================================================================
-   АвтоЗапчасть — Custom PHP/AJAX additions
+   АвтоЗапчасть — Custom AJAX additions
    ================================================================ */
+
+/* Determine base URL from script tags */
+var AZ_BASE = (function(){
+  var s = document.querySelector('script[src*="main.js"]');
+  if (!s) return '';
+  return s.src.replace(/\/assets\/js\/main\.js.*/, '');
+}());
 
 /* Live search */
 (function () {
@@ -918,14 +938,14 @@
   input.addEventListener('input', function () {
     clearTimeout(timer);
     var q = this.value.trim();
-    if (q.length < 2) { drop.style.display = 'none'; drop.innerHTML = ''; return; }
+    if (q.length < 2) { drop.style.display='none'; drop.innerHTML=''; return; }
     timer = setTimeout(function () {
-      fetch('/api/search.php?q=' + encodeURIComponent(q))
+      fetch(AZ_BASE + '/api/search.php?q=' + encodeURIComponent(q))
         .then(function(r){ return r.json(); })
         .then(function(data) {
-          if (!data.length) { drop.style.display='none'; return; }
+          if (!data.length) { drop.style.display='none'; drop.innerHTML='<div class="search-no-results">Ничего не найдено</div>'; drop.style.display='block'; return; }
           drop.innerHTML = data.map(function(p){
-            return '<a class="search-result-item" href="/catalog/product.php?id='+p.id+'">'
+            return '<a class="search-result-item" href="'+AZ_BASE+'/catalog/part.php?id='+p.id+'">'
               + '<span class="search-result-num">'+p.part_number+'</span>'
               + '<span class="search-result-name">'+p.name+'</span>'
               + '<span class="search-result-price">'+p.price_fmt+'</span>'
@@ -936,30 +956,78 @@
     }, 300);
   });
   document.addEventListener('click', function(e){
-    if (!input.contains(e.target)) { drop.style.display='none'; }
+    if (!input.contains(e.target) && !drop.contains(e.target)) { drop.style.display='none'; }
   });
 }());
 
 /* Flash message auto-hide */
 (function () {
   var flash = document.getElementById('flash-container');
-  if (flash) setTimeout(function(){ flash.style.opacity='0'; flash.style.transition='opacity .5s'; setTimeout(function(){ flash.remove(); }, 500); }, 4000);
+  if (flash) setTimeout(function(){
+    flash.style.transition='opacity .5s';
+    flash.style.opacity='0';
+    setTimeout(function(){ flash.remove(); }, 500);
+  }, 4000);
 }());
 
-/* Update cart badge after add-to-cart */
+/* Add to cart via data-add-cart attribute */
 document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.az-add-to-cart');
+  var btn = e.target.closest('[data-add-cart]');
   if (!btn) return;
   e.preventDefault();
-  var pid = btn.dataset.id, qty = btn.dataset.qty || 1;
-  fetch('/api/cart.php', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'add',product_id:pid,qty:qty,csrf:btn.dataset.csrf||''})})
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var badge = document.getElementById('cart-badge');
-      if (d.count !== undefined) {
-        if (!badge) { badge = document.createElement('span'); badge.id='cart-badge'; badge.className='cart_quantity'; var ic = document.querySelector('.cart_icon'); if(ic) ic.appendChild(badge); }
-        badge.textContent = d.count;
-        badge.style.display = d.count > 0 ? 'flex' : 'none';
+  var pid = btn.dataset.addCart;
+  var qty = btn.dataset.qty || document.getElementById('qty-input')?.value || 1;
+  var csrf = document.querySelector('meta[name="csrf"]')?.content || '';
+  btn.disabled = true;
+  var origText = btn.innerHTML;
+  btn.innerHTML = '...';
+  fetch(AZ_BASE + '/api/cart.php', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({action:'add', part_id: parseInt(pid), qty: parseInt(qty)})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    btn.disabled = false;
+    btn.innerHTML = d.success ? '✓ Добавлено' : origText;
+    if (d.success) {
+      setTimeout(function(){ btn.innerHTML = origText; }, 2000);
+      /* update all cart badges */
+      document.querySelectorAll('#cart-badge, .cart_count').forEach(function(el){
+        el.textContent = d.count || '';
+      });
+      /* update mini cart price */
+      if (d.total_fmt) {
+        var cp = document.querySelector('.cart_price');
+        if (cp) cp.innerHTML = d.total_fmt + ' <i class="ion-ios-arrow-down"></i>';
       }
-    });
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.innerHTML = origText;
+  });
+});
+
+/* Mini cart remove via data-cart-remove */
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-cart-remove]');
+  if (!btn) return;
+  e.preventDefault();
+  var pid = btn.dataset.cartRemove;
+  fetch(AZ_BASE + '/api/cart.php', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({action:'remove', part_id: parseInt(pid)})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.success) {
+      var row = btn.closest('.cart_item');
+      if (row) row.remove();
+      document.querySelectorAll('#cart-badge, .cart_count').forEach(function(el){
+        el.textContent = d.count || '';
+      });
+    }
+  });
 });

@@ -3,345 +3,319 @@ require_once __DIR__ . '/config/config.php';
 $pageTitle = 'Главная — Профессиональные автозапчасти';
 $db = getDB();
 
-$catStmt   = $db->query("SELECT * FROM categories WHERE is_active=1 AND parent_id IS NULL ORDER BY sort_order LIMIT 6");
-$featCats  = $catStmt->fetchAll();
+$allCats  = getCategories();
+$rootCats = array_values(array_filter($allCats, fn($c) => $c['parent_id'] === null));
 
-$brandStmt = $db->query("SELECT * FROM brands WHERE is_active=1 ORDER BY name LIMIT 8");
-$featBrands= $brandStmt->fetchAll();
+$featBrands = $db->query("SELECT * FROM brands WHERE is_active=1 ORDER BY name LIMIT 16")->fetchAll();
 
-$newStmt = $db->query(
-    "SELECT p.*, b.name AS brand_name, c.name AS category_name
-     FROM parts p
+$newParts = $db->query(
+    "SELECT p.*, b.name AS brand_name FROM parts p
      LEFT JOIN brands b ON b.id=p.brand_id
-     LEFT JOIN categories c ON c.id=p.category_id
-     WHERE p.is_active=1 ORDER BY p.created_at DESC LIMIT 8"
-);
-$newParts = $newStmt->fetchAll();
+     WHERE p.is_active=1 ORDER BY p.created_at DESC LIMIT 10"
+)->fetchAll();
 
-$popularStmt = $db->query(
-    "SELECT p.*, b.name AS brand_name, c.name AS category_name
-     FROM parts p
+$popularParts = $db->query(
+    "SELECT p.*, b.name AS brand_name FROM parts p
      LEFT JOIN brands b ON b.id=p.brand_id
-     LEFT JOIN categories c ON c.id=p.category_id
-     WHERE p.is_active=1 AND p.stock>0 ORDER BY p.price DESC LIMIT 8"
-);
-$popularParts = $popularStmt->fetchAll();
+     WHERE p.is_active=1 AND p.stock>0 ORDER BY p.price DESC LIMIT 10"
+)->fetchAll();
+
+$featuredParts = $db->query(
+    "SELECT p.*, b.name AS brand_name FROM parts p
+     LEFT JOIN brands b ON b.id=p.brand_id
+     WHERE p.is_active=1 ORDER BY p.id ASC LIMIT 10"
+)->fetchAll();
 
 require_once __DIR__ . '/includes/header.php';
+
+function renderProductPairs(array $parts, string $appUrl, int $startImg = 1): void {
+    $chunks = array_chunk($parts, 2);
+    $i = $startImg;
+    foreach ($chunks as $pair) {
+        echo '<div class="col-lg-3"><div class="product_items">';
+        foreach ($pair as $p) {
+            $img1 = (($i - 1) % 12) + 1;
+            $img2 = ($i % 12) + 1;
+            $i++;
+            $url   = $appUrl . '/catalog/part.php?id=' . (int)$p['id'];
+            $name  = sanitize(truncate($p['name'], 55));
+            $brand = sanitize($p['brand_name'] ?? '');
+            $price = formatPriceInCurrency((float)$p['price']);
+            $cartBtn = isLoggedIn()
+                ? '<li class="add_to_cart"><a href="#" data-add-cart="'.(int)$p['id'].'" title="В корзину">В корзину</a></li>'
+                : '<li class="add_to_cart"><a href="'.$appUrl.'/auth/login.php">Войти</a></li>';
+            echo <<<HTML
+<article class="single_product">
+  <figure>
+    <div class="product_thumb">
+      <a class="primary_img" href="{$url}"><img src="{$appUrl}/assets/img/product/product{$img1}.jpg" alt="{$name}"></a>
+      <a class="secondary_img" href="{$url}"><img src="{$appUrl}/assets/img/product/product{$img2}.jpg" alt="{$name}"></a>
+      <div class="label_product"><span class="label_new">В наличии</span></div>
+      <div class="quick_button"><a href="{$url}" title="Подробнее"><i class="icon-eye"></i></a></div>
+    </div>
+    <div class="product_content">
+      <div class="product_content_inner">
+        <p class="manufacture_product"><a href="#">{$brand}</a></p>
+        <h4 class="product_name"><a href="{$url}">{$name}</a></h4>
+        <div class="product_rating"><ul>
+          <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
+          <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
+          <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
+          <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
+          <li><a href="#"><i class="ion-android-star-outline"></i></a></li>
+        </ul></div>
+        <div class="price_box"><span class="current_price">{$price}</span></div>
+      </div>
+      <div class="action_links"><ul>{$cartBtn}</ul></div>
+    </div>
+  </figure>
+</article>
+HTML;
+        }
+        echo '</div></div>';
+    }
+}
 ?>
 
-<!-- slider area start -->
+<!--top tags area start-->
+<div class="top_tags_area">
+  <div class="container">
+    <div class="row"><div class="col-12">
+      <div class="tags_content">
+        <ul>
+          <li><span>Категории:</span></li>
+          <?php foreach ($rootCats as $c): ?>
+          <li><a href="<?= APP_URL ?>/catalog/index.php?category=<?= sanitize($c['slug']) ?>"><?= sanitize($c['name']) ?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    </div></div>
+  </div>
+</div>
+<!--top tags area end-->
+
+<!--slider area start-->
 <section class="slider_section mb-80">
   <div class="slider_area slider_carousel owl-carousel">
     <div class="single_slider d-flex align-items-center" data-bgimg="<?= APP_URL ?>/assets/img/slider/slider1.jpg">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <div class="slider_content">
-              <h1>Запчасти <span>для любого автомобиля</span></h1>
-              <p>Оригинальные и аналоговые запчасти от ведущих мировых производителей. Более 50 000 позиций в наличии.</p>
-              <a class="button" href="<?= APP_URL ?>/catalog/index.php">В каталог <i class="fa fa-angle-double-right"></i></a>
-            </div>
-          </div>
+      <div class="container"><div class="row"><div class="col-12">
+        <div class="slider_content">
+          <h1>Большая распродажа <span>автозапчастей</span></h1>
+          <p>Оригинальные и аналоговые запчасти от ведущих мировых производителей. Более 50 000 позиций в наличии.</p>
+          <a class="button" href="<?= APP_URL ?>/catalog/index.php">В каталог <i class="fa fa-angle-double-right"></i></a>
         </div>
-      </div>
+      </div></div></div>
     </div>
     <div class="single_slider d-flex align-items-center" data-bgimg="<?= APP_URL ?>/assets/img/slider/slider2.jpg">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <div class="slider_content center">
-              <h1>Быстрая доставка <span>по Москве за 24 часа</span></h1>
-              <p>Гарантия качества на все товары. Подбор по номеру детали или VIN-коду автомобиля.</p>
-              <a class="button" href="<?= APP_URL ?>/catalog/index.php">Смотреть каталог <i class="fa fa-angle-double-right"></i></a>
-            </div>
-          </div>
+      <div class="container"><div class="row"><div class="col-12">
+        <div class="slider_content center">
+          <h1>Запчасти <span>для любого автомобиля</span></h1>
+          <p>Быстрая доставка по всей России. Подбор по номеру детали или VIN-коду.</p>
+          <a class="button" href="<?= APP_URL ?>/catalog/index.php">Смотреть каталог <i class="fa fa-angle-double-right"></i></a>
         </div>
-      </div>
+      </div></div></div>
     </div>
     <div class="single_slider d-flex align-items-center" data-bgimg="<?= APP_URL ?>/assets/img/slider/slider3.jpg">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <div class="slider_content">
-              <h1>Качественные <span>детали двигателя</span></h1>
-              <p>Наличие товара на московском складе. Самовывоз или экспресс-доставка по всей России.</p>
-              <a class="button" href="<?= APP_URL ?>/catalog/index.php">Найти запчасть <i class="fa fa-angle-double-right"></i></a>
-            </div>
-          </div>
+      <div class="container"><div class="row"><div class="col-12">
+        <div class="slider_content">
+          <h1>Качественные <span>детали двигателя</span></h1>
+          <p>Наличие товара на московском складе. Самовывоз или экспресс-доставка.</p>
+          <a class="button" href="<?= APP_URL ?>/catalog/index.php">Найти запчасть <i class="fa fa-angle-double-right"></i></a>
         </div>
-      </div>
+      </div></div></div>
     </div>
   </div>
 </section>
-<!-- slider area end -->
+<!--slider area end-->
 
-<!-- service area start -->
-<div class="service_area bg_gray section_padding_50">
+<!--banner area start-->
+<div class="banner_area mb-80">
   <div class="container">
     <div class="row">
-      <div class="col-lg-3 col-md-6 col-sm-6">
-        <div class="single_service d-flex align-items-center">
-          <div class="service_icon mr-15">
-            <img src="<?= APP_URL ?>/assets/img/about/shipping1.png" alt="">
-          </div>
-          <div class="service_content">
-            <h4>Бесплатная доставка</h4>
-            <p>При заказе от 5 000 ₽</p>
-          </div>
+      <div class="col-12">
+        <div class="welcome_title">
+          <h3>ДОБРО ПОЖАЛОВАТЬ В <?= strtoupper(sanitize(getSetting('site_name','АВТОЗАПЧАСТЬ'))) ?></h3>
+          <h2>ВАШИ <span>ЗАПЧАСТИ ОНЛАЙН</span></h2>
+          <p>Широкий ассортимент. Быстрая доставка. Гарантия качества.</p>
         </div>
       </div>
-      <div class="col-lg-3 col-md-6 col-sm-6">
-        <div class="single_service d-flex align-items-center">
-          <div class="service_icon mr-15">
-            <img src="<?= APP_URL ?>/assets/img/about/shipping2.png" alt="">
-          </div>
-          <div class="service_content">
-            <h4>Возврат 14 дней</h4>
-            <p>Без лишних вопросов</p>
-          </div>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-4">
+        <figure class="single_banner"><div class="banner_thumb">
+          <a href="<?= APP_URL ?>/catalog/index.php"><img src="<?= APP_URL ?>/assets/img/bg/banner1.jpg" alt="Двигатель"></a>
+        </div></figure>
       </div>
-      <div class="col-lg-3 col-md-6 col-sm-6">
-        <div class="single_service d-flex align-items-center">
-          <div class="service_icon mr-15">
-            <img src="<?= APP_URL ?>/assets/img/about/shipping3.png" alt="">
-          </div>
-          <div class="service_content">
-            <h4>Безопасная оплата</h4>
-            <p>100% защита транзакций</p>
-          </div>
-        </div>
+      <div class="col-lg-4 col-md-4">
+        <figure class="single_banner"><div class="banner_thumb">
+          <a href="<?= APP_URL ?>/catalog/index.php"><img src="<?= APP_URL ?>/assets/img/bg/banner2.jpg" alt="Тормоза"></a>
+        </div></figure>
       </div>
-      <div class="col-lg-3 col-md-6 col-sm-6">
-        <div class="single_service d-flex align-items-center">
-          <div class="service_icon mr-15">
-            <img src="<?= APP_URL ?>/assets/img/about/shipping4.png" alt="">
-          </div>
-          <div class="service_content">
-            <h4>Поддержка 24/7</h4>
-            <p>Звоните в любое время</p>
-          </div>
-        </div>
+      <div class="col-lg-4 col-md-4">
+        <figure class="single_banner"><div class="banner_thumb">
+          <a href="<?= APP_URL ?>/catalog/index.php"><img src="<?= APP_URL ?>/assets/img/bg/banner3.jpg" alt="Подвеска"></a>
+        </div></figure>
       </div>
     </div>
   </div>
 </div>
-<!-- service area end -->
+<!--banner area end-->
 
-<!-- category area start -->
-<div class="product_category_area section_padding_100">
+<!--Categories product area start-->
+<div class="categories_product_area mb-80">
   <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="section_title">
-          <h2>Категории запчастей</h2>
-          <p>Выберите категорию и найдите нужную деталь</p>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <?php
-      $catImages = [
-        'dvigatel'          => 's-product/category1.jpg',
-        'tormoznaya-sistema'=> 's-product/category2.jpg',
-        'podveska'          => 's-product/category3.jpg',
-        'elektrika'         => 's-product/category4.jpg',
-        'kuzov'             => 's-product/category5.jpg',
-        'transmissiya'      => 's-product/category6.jpg',
-      ];
-      foreach ($featCats as $cat):
-        $img = $catImages[$cat['slug']] ?? 's-product/category1.jpg';
-      ?>
-      <div class="col-lg-2 col-md-4 col-sm-4 col-6">
-        <div class="single_category">
-          <div class="category_img">
+    <div class="row"><div class="col-12">
+      <div class="categories_product_inner categories_column7 owl-carousel">
+        <?php
+        $catImgFiles = ['category1.jpg','category2.jpg','category3.jpg','category4.jpg','category5.jpg','category6.jpg','category7.jpg'];
+        $ci = 0;
+        foreach ($rootCats as $cat):
+          $cimg = $catImgFiles[$ci++ % 7];
+        ?>
+        <div class="single_categories_product">
+          <div class="categories_product_thumb">
             <a href="<?= APP_URL ?>/catalog/index.php?category=<?= sanitize($cat['slug']) ?>">
-              <img src="<?= APP_URL ?>/assets/img/<?= $img ?>" alt="<?= sanitize($cat['name']) ?>">
+              <img src="<?= APP_URL ?>/assets/img/s-product/<?= $cimg ?>" alt="<?= sanitize($cat['name']) ?>">
             </a>
           </div>
-          <div class="category_content">
-            <h6><a href="<?= APP_URL ?>/catalog/index.php?category=<?= sanitize($cat['slug']) ?>"><?= sanitize($cat['name']) ?></a></h6>
+          <div class="categories_product_content">
+            <h4><a href="<?= APP_URL ?>/catalog/index.php?category=<?= sanitize($cat['slug']) ?>"><?= sanitize($cat['name']) ?></a></h4>
           </div>
         </div>
+        <?php endforeach; ?>
       </div>
-      <?php endforeach; ?>
-    </div>
+    </div></div>
   </div>
 </div>
-<!-- category area end -->
+<!--Categories product area end-->
 
-<!-- new arrivals -->
-<div class="product_area section_padding_100 bg_gray">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
+<!--home section bg area start-->
+<div class="home_section_bg">
+
+  <!--product area start-->
+  <div class="product_area">
+    <div class="container">
+      <div class="row"><div class="col-12">
         <div class="section_title">
-          <h2>Новые поступления</h2>
-          <p>Свежие запчасти на складе</p>
+          <h2><span>Наши</span> товары</h2>
+          <p>Качественные запчасти для вашего автомобиля.</p>
         </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <div class="product_nav_tab">
-          <ul class="nav" id="myTab" role="tablist">
-            <li class="nav-item"><a class="nav-link active" href="#new_arrivals">Новинки</a></li>
-            <li class="nav-item"><a class="nav-link" href="#popular">Популярные</a></li>
+        <div class="product_tab_btn">
+          <ul class="nav" role="tablist" id="nav-tab">
+            <li><a class="active" data-bs-toggle="tab" href="#Sellers" role="tab">Лидеры продаж</a></li>
+            <li><a data-bs-toggle="tab" href="#Featured" role="tab">Рекомендуемые</a></li>
+            <li><a data-bs-toggle="tab" href="#Arrivals" role="tab">Новинки</a></li>
           </ul>
         </div>
-      </div>
-    </div>
-    <div class="tab-content" id="myTabContent">
-      <!-- New arrivals tab -->
-      <div class="tab-pane fade show active" id="new_arrivals">
-        <div class="row product_slick owl-carousel">
-          <?php foreach ($newParts as $part):
-            $stock = getStockStatus((int)$part['stock']);
-          ?>
-          <div class="col">
-            <div class="az-part-card">
-              <div class="az-part-card-img">
-                <div class="az-part-card-img-placeholder">
-                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="2" y="7" width="20" height="10" rx="1"/><path d="M8 7V5M16 7V5"/></svg>
-                </div>
-                <span class="az-part-number-badge"><?= sanitize($part['part_number']) ?></span>
-              </div>
-              <div class="az-part-card-body">
-                <div class="az-part-card-brand"><?= sanitize($part['brand_name']) ?></div>
-                <div class="az-part-card-name">
-                  <a href="<?= APP_URL ?>/catalog/part.php?id=<?= $part['id'] ?>"><?= sanitize(truncate($part['name'],55)) ?></a>
-                </div>
-                <div class="az-part-card-price">
-                  <?= formatPriceInCurrency((float)$part['price']) ?>
-                  <span class="az-badge az-badge-<?= $stock['class'] ?>" style="font-size:11px;margin-left:6px;"><?= $stock['label'] ?></span>
-                </div>
-              </div>
-              <div class="az-part-card-footer">
-                <?php if (isLoggedIn()): ?>
-                <button class="az-btn az-btn-primary az-btn-sm az-btn-block" data-add-cart="<?= $part['id'] ?>">В корзину</button>
-                <?php else: ?>
-                <a href="<?= APP_URL ?>/auth/login.php" class="az-btn az-btn-outline az-btn-sm az-btn-block">Войдите для заказа</a>
-                <?php endif; ?>
-              </div>
+      </div></div>
+
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="Sellers" role="tabpanel">
+          <div class="row">
+            <div class="product_carousel product_column5 owl-carousel">
+              <?php renderProductPairs($popularParts, APP_URL, 1); ?>
             </div>
           </div>
-          <?php endforeach; ?>
         </div>
-      </div>
-      <!-- Popular tab -->
-      <div class="tab-pane fade" id="popular">
-        <div class="row product_slick owl-carousel">
-          <?php foreach ($popularParts as $part):
-            $stock = getStockStatus((int)$part['stock']);
-          ?>
-          <div class="col">
-            <div class="az-part-card">
-              <div class="az-part-card-img">
-                <div class="az-part-card-img-placeholder">
-                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="2" y="7" width="20" height="10" rx="1"/></svg>
-                </div>
-                <span class="az-part-number-badge"><?= sanitize($part['part_number']) ?></span>
-              </div>
-              <div class="az-part-card-body">
-                <div class="az-part-card-brand"><?= sanitize($part['brand_name']) ?></div>
-                <div class="az-part-card-name">
-                  <a href="<?= APP_URL ?>/catalog/part.php?id=<?= $part['id'] ?>"><?= sanitize(truncate($part['name'],55)) ?></a>
-                </div>
-                <div class="az-part-card-price"><?= formatPriceInCurrency((float)$part['price']) ?></div>
-              </div>
-              <div class="az-part-card-footer">
-                <?php if (isLoggedIn()): ?>
-                <button class="az-btn az-btn-primary az-btn-sm az-btn-block" data-add-cart="<?= $part['id'] ?>">В корзину</button>
-                <?php else: ?>
-                <a href="<?= APP_URL ?>/auth/login.php" class="az-btn az-btn-outline az-btn-sm az-btn-block">Войти</a>
-                <?php endif; ?>
-              </div>
+        <div class="tab-pane fade" id="Featured" role="tabpanel">
+          <div class="row">
+            <div class="product_carousel product_column5 owl-carousel">
+              <?php renderProductPairs($featuredParts, APP_URL, 5); ?>
             </div>
           </div>
-          <?php endforeach; ?>
+        </div>
+        <div class="tab-pane fade" id="Arrivals" role="tabpanel">
+          <div class="row">
+            <div class="product_carousel product_column5 owl-carousel">
+              <?php renderProductPairs($newParts, APP_URL, 9); ?>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row mt-30">
-      <div class="col-12 text-center">
-        <a href="<?= APP_URL ?>/catalog/index.php" class="btn btn-primary">Смотреть весь каталог</a>
-      </div>
+
+      <div class="row mt-30"><div class="col-12 text-center">
+        <a href="<?= APP_URL ?>/catalog/index.php" class="btn btn-primary px-30">Смотреть весь каталог</a>
+      </div></div>
     </div>
   </div>
-</div>
-<!-- new arrivals end -->
+  <!--product area end-->
 
-<!-- banner area -->
-<div class="banner_area section_padding_50">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="single_banner">
-          <img src="<?= APP_URL ?>/assets/img/bg/banner1.jpg" alt="Двигатель">
-          <div class="banner_content">
-            <h5>Детали</h5>
-            <h2>ДВИГАТЕЛЯ</h2>
-            <a href="<?= APP_URL ?>/catalog/index.php?category=dvigatel">Купить →</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="single_banner">
-          <img src="<?= APP_URL ?>/assets/img/bg/banner2.jpg" alt="Тормоза">
-          <div class="banner_content">
-            <h5>Тормозная</h5>
-            <h2>СИСТЕМА</h2>
-            <a href="<?= APP_URL ?>/catalog/index.php?category=tormoznaya-sistema">Купить →</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="single_banner">
-          <img src="<?= APP_URL ?>/assets/img/bg/banner3.jpg" alt="Подвеска">
-          <div class="banner_content">
-            <h5>Детали</h5>
-            <h2>ПОДВЕСКИ</h2>
-            <a href="<?= APP_URL ?>/catalog/index.php?category=podveska">Купить →</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- banner area end -->
-
-<!-- brand area -->
-<div class="brand_area section_padding_50 bg_gray">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
+  <!--blog area start-->
+  <div class="blog_area">
+    <div class="container">
+      <div class="row"><div class="col-12">
         <div class="section_title">
-          <h2>Бренды-производители</h2>
+          <h2><span>Полезные</span> статьи</h2>
+          <p>Советы по обслуживанию и ремонту автомобиля.</p>
         </div>
+      </div></div>
+      <div class="row blog_carousel owl-carousel">
+        <?php
+        $blogs = [
+          ['img'=>'blog1.jpg','title'=>'Как выбрать тормозные диски: полное руководство','tag'=>'Советы','date'=>'Март 2025'],
+          ['img'=>'blog2.jpg','title'=>'Замена масла своими руками: советы специалиста','tag'=>'Советы','date'=>'Февраль 2025'],
+          ['img'=>'blog3.jpg','title'=>'Признаки износа ремня ГРМ и когда его менять','tag'=>'Советы','date'=>'Январь 2025'],
+          ['img'=>'blog4.jpg','title'=>'Как выбрать тормозные колодки: полное руководство','tag'=>'Советы','date'=>'Декабрь 2024'],
+        ];
+        foreach ($blogs as $bl):
+        ?>
+        <div class="col-lg-3">
+          <article class="single_blog">
+            <figure>
+              <div class="blog_thumb"><a href="#"><img src="<?= APP_URL ?>/assets/img/blog/<?= $bl['img'] ?>" alt="<?= $bl['title'] ?>"></a></div>
+              <figcaption class="blog_content">
+                <h4><a href="#"><?= $bl['title'] ?></a></h4>
+                <div class="post_meta"><p><a href="#"><?= $bl['tag'] ?></a> / <?= $bl['date'] ?></p></div>
+                <div class="post_desc"><p>Читайте наши советы по обслуживанию и ремонту автомобиля...</p></div>
+                <footer class="post_readmore"><a href="#">Читать далее</a></footer>
+              </figcaption>
+            </figure>
+          </article>
+        </div>
+        <?php endforeach; ?>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12">
-        <div class="brand_active owl-carousel">
-          <?php foreach ($featBrands as $b): ?>
+  </div>
+  <!--blog area end-->
+
+</div>
+<!--home section bg area end-->
+
+<!--brand area start-->
+<div class="brand_area">
+  <div class="container">
+    <div class="col-12">
+      <div class="brand_container owl-carousel">
+        <?php
+        $bImgNums = range(1,8);
+        $bi = 0;
+        if (!empty($featBrands)):
+          $pairs = array_chunk($featBrands, 2);
+          foreach ($pairs as $pair):
+        ?>
+        <div class="brand_list">
+          <?php foreach ($pair as $b):
+            $bSrc = $b['logo_path'] ? APP_URL.'/'.sanitize($b['logo_path'])
+                                    : APP_URL.'/assets/img/brand/brand'.($bImgNums[$bi++%8]).'.jpg';
+          ?>
           <div class="single_brand">
             <a href="<?= APP_URL ?>/catalog/index.php?brand=<?= (int)$b['id'] ?>">
-              <?php if ($b['logo_path']): ?>
-              <img src="<?= APP_URL . '/' . sanitize($b['logo_path']) ?>" alt="<?= sanitize($b['name']) ?>">
-              <?php else: ?>
-              <div style="padding:14px;text-align:center;font-weight:700;font-size:16px;color:#666;">
-                <?= sanitize($b['name']) ?>
-              </div>
-              <?php endif; ?>
+              <img src="<?= $bSrc ?>" alt="<?= sanitize($b['name']) ?>">
             </a>
           </div>
           <?php endforeach; ?>
         </div>
+        <?php endforeach; else: ?>
+        <?php for ($n=1;$n<=8;$n+=2): ?>
+        <div class="brand_list">
+          <div class="single_brand"><a href="<?= APP_URL ?>/catalog/index.php"><img src="<?= APP_URL ?>/assets/img/brand/brand<?= $n ?>.jpg" alt=""></a></div>
+          <div class="single_brand"><a href="<?= APP_URL ?>/catalog/index.php"><img src="<?= APP_URL ?>/assets/img/brand/brand<?= $n+1 ?>.jpg" alt=""></a></div>
+        </div>
+        <?php endfor; endif; ?>
       </div>
     </div>
   </div>
 </div>
-<!-- brand area end -->
+<!--brand area end-->
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
